@@ -1,11 +1,16 @@
+# Taekyung Kim(PhD)
+# 2018-11-25
+# Korean Open API Python Frontend
+# for Pandas and KAIST students
 import requests
 import pandas as pd
 import json
 from urllib.parse import unquote
 import xmltodict
 class KorTour:
-    def __init__(self):
-        self.endpoint='http://api.visitkorea.or.kr/openapi/service'
+    def __init__(self,service_key):
+        self.service_key=unquote(service_key) #공공데이터 포털의 UTF-8 키
+        self.endpoint='http://api.visitkorea.or.kr/openapi/service/rest/KorService'
         self.nogomsg="Service is not available."
         self.service_ok=False #for assertion
         self.r=None #python requests
@@ -14,20 +19,14 @@ class KorTour:
         r=self.r
         o=xmltodict.parse(r.content.decode())
         return o
-class KorTourRegionCode(KorTour):
-    def __init__(self,service_key):
-        super().__init__()
-        self.service_url='/rest/KorService/areaCode'
-        self.service_key=unquote(service_key) #공공데이터 포털의 UTF-8 키
-    def collect(self,num_of_rows=10,page_no=1,area_code=1):
+    def collect(self):
         params={}
         params['ServiceKey']=self.service_key
-        params['numOfRows']=num_of_rows
-        params['pageNo']=page_no
         params['MobileOS']='ETC'
         params['MobileApp']='AppTest'
-        params['areaCode']=area_code
-        r=requests.get(self.endpoint+self.service_url,params=params)
+        return params
+    def call_request(self,url,params):
+        r=requests.get(url,params=params)
         if r.status_code==200:
             self.service_ok=True
             self.r=r
@@ -44,3 +43,27 @@ class KorTourRegionCode(KorTour):
         o=self.access_data() #데이터 접근
         i=o['response']['body']['totalCount']
         return int(i)
+class KorTourRegionCode(KorTour):
+    def __init__(self,service_key):
+        super().__init__(service_key)
+        self.service_url='/areaCode'
+    def collect(self,num_of_rows=10,page_no=1,area_code=1):
+        params=super().collect()
+        params['numOfRows']=num_of_rows
+        params['pageNo']=page_no
+        params['areaCode']=area_code
+        url=self.endpoint+self.service_url
+        super().call_request(url,params)
+class KorTourKeywordSearch(KorTour):
+    def __init__(self,service_key):
+        super().__init__(service_key)
+        self.service_url="/searchKeyword"
+    def collect(self,keyword,num_of_rows=10,list_yn='Y',arrange='A',content_type=12):
+        params=super().collect()
+        params['numOfRows']=num_of_rows
+        params['listYN']=list_yn
+        params['arrange']=arrange
+        params['contentTypeId']=content_type
+        params['keyword']=keyword
+        url=self.endpoint+self.service_url
+        super().call_request(url,params)
