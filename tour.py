@@ -7,8 +7,13 @@ class KorTour:
     def __init__(self):
         self.endpoint='http://api.visitkorea.or.kr/openapi/service'
         self.nogomsg="Service is not available."
-    def get_data(self):
-        pass
+        self.service_ok=False #for assertion
+        self.r=None #python requests
+    def access_data(self):
+        assert self.service_ok, self.nogomsg
+        r=self.r
+        o=xmltodict.parse(r.content.decode())
+        return o
 class KorTourRegionCode(KorTour):
     def __init__(self,service_key):
         super().__init__()
@@ -24,25 +29,18 @@ class KorTourRegionCode(KorTour):
         params['areaCode']=area_code
         r=requests.get(self.endpoint+self.service_url,params=params)
         if r.status_code==200:
-            self.serivce_ok=True
+            self.service_ok=True
             self.r=r
-        else:
-            self.serivce_ok=False
-    def _access_data(self):
-        assert self.serivce_ok, self.nogomsg
-        r=self.r
-        o=xmltodict.parse(r.content.decode())
-        return o
     def get_data(self):
-        o=self._access_data() #데이터 접근
+        o=self.access_data() #데이터 접근
         i=o['response']['body']['items']['item']
         j=json.dumps(i)
         return pd.read_json(j)
     def get_page_no(self):
-        o=self._access_data() #데이터 접근
+        o=self.access_data() #데이터 접근
         i=o['response']['body']['pageNo']
         return int(i)
     def get_total_count(self):
-        o=self._access_data() #데이터 접근
+        o=self.access_data() #데이터 접근
         i=o['response']['body']['totalCount']
         return int(i)
