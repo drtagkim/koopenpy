@@ -6,10 +6,17 @@
 pip install -r requirement.txt
 ```
 
-# 설치
+# 설치&업그레이드
+## 최초 설치
 ```
 pip install http://github.com/drtagkim/koopenpy/zipball/master
 ```
+
+## 업그레이드
+```
+pip install --upgrade http://github.com/drtagkim/koopenpy/zipball/master
+```
+
 
 # 예제
 ## 관광공사 API
