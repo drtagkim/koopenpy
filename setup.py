@@ -5,5 +5,6 @@ setup(
     description='Korean Open API frontend for lecture',
     author='Taekyung Kim',
     author_email='kimtk@office.suwon.ac.kr',
-    url='https://github.com/drtagkim/koopenpy'
+    url='https://github.com/drtagkim/koopenpy',
+    python_requires='>=3.5'
 )
