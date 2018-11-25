@@ -30,11 +30,17 @@ class KorTour:
         if r.status_code==200:
             self.service_ok=True
             self.r=r
+        else:
+            self.service_ok=False
+            self.r=None
     def get_data(self):
         o=self.access_data() #데이터 접근
-        i=o['response']['body']['items']['item']
-        j=json.dumps(i)
-        return pd.read_json(j)
+        try:
+            i=o['response']['body']['items']['item']
+            j=json.dumps(i)
+            return pd.read_json(j)
+        except TypeError:
+            return None
     def get_page_no(self):
         o=self.access_data() #데이터 접근
         i=o['response']['body']['pageNo']
@@ -58,7 +64,7 @@ class KorTourKeywordSearch(KorTour):
     def __init__(self,service_key):
         super().__init__(service_key)
         self.service_url="/searchKeyword"
-    def collect(self,keyword,num_of_rows=10,list_yn='Y',arrange='A',content_type=12):
+    def collect(self,keyword,num_of_rows=10,list_yn='Y',arrange='A',content_type='',cat1=''):
         params=super().collect()
         params['numOfRows']=num_of_rows
         params['listYN']=list_yn
@@ -67,3 +73,31 @@ class KorTourKeywordSearch(KorTour):
         params['keyword']=keyword
         url=self.endpoint+self.service_url
         super().call_request(url,params)
+class KorTourCategoryCode(KorTour):
+    def __init__(self,service_key):
+        super().__init__(service_key)
+        self.service_url="/categoryCode"
+    def collect(self):
+        params=super().collect()
+        url=self.endpoint+self.service_url
+        super().call_request(url,params)
+class KorTourSearchFestival(KorTour):
+    def __init__(self,service_key):
+        super().__init__(service_key)
+        self.service_url="/searchFestival"
+    def collect(self,event_start_date=''):
+        params=super().collect()
+        params['eventStartDate']=event_start_date
+        url=self.endpoint+self.service_url
+        super().call_request(url,params)
+class KorTourAreaCode(KorTour):
+    def __init__(self,service_key):
+        super().__init__(service_key)
+        self.service_url="/areaCode"
+    def collect(self,areacode=''):
+        params=super().collect()
+        params['areaCode']=areacode
+        url=self.endpoint+self.service_url
+        super().call_request(url,params)
+        
+
