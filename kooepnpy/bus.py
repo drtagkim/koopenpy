@@ -7,6 +7,8 @@ import pandas as pd
 import json
 from urllib.parse import unquote
 import xmltodict
+
+        
 class Bus:
     def __init__(self,service_key):
         self.service_key=unquote(service_key) #공공데이터 포털의 UTF-8 키
@@ -52,7 +54,7 @@ class Bus:
         o=self.access_data() #데이터 접근
         i=o['response']['body']['totalCount']
         return int(i)
-class ButArrival(Bus):
+class BusArrival(Bus):
     def __init__(self,service_key):
         super().__init__(service_key)
         self.service_url='/getSttnAcctoArvlPrearngeInfoList'
@@ -62,7 +64,7 @@ class ButArrival(Bus):
         params['nodeId']=node_id
         url=self.endpoint+self.service_url
         super().call_request(url,params)
-class ButArrivalRoute(Bus):
+class BusArrivalRoute(Bus):
     def __init__(self,service_key):
         super().__init__(service_key)
         self.service_url='/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList'
@@ -73,7 +75,7 @@ class ButArrivalRoute(Bus):
         params['routeId']=route_id
         url=self.endpoint+self.service_url
         super().call_request(url,params)
-class ButCityCode(Bus):
+class BusCityCode(Bus):
     def __init__(self,service_key):
         super().__init__(service_key)
         self.service_url='/getCtyCodeList'
